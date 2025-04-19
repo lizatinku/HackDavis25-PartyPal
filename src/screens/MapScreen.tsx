@@ -58,6 +58,30 @@ const erPins = [
   },
 ];
 
+const alcoholSupportPins = [
+    {
+      id: 'alcohol-1',
+      title: '🍃 ADAP (Alcohol & Drug Abuse Program)',
+      description: 'Free alcohol education and risk counseling.',
+      latitude: 38.5439,
+      longitude: -121.7510,
+    },
+    {
+      id: 'alcohol-2',
+      title: '🍃 Health Education & Promotion (HEP)',
+      description: 'Party Smart kits and alcohol safety resources.',
+      latitude: 38.5410,
+      longitude: -121.7501,
+    },
+    {
+      id: 'alcohol-3',
+      title: '🍃 The Pantry @ UC Davis',
+      description: 'Hydration kits and wellness supplies.',
+      latitude: 38.5426,
+      longitude: -121.7525,
+    },
+  ];
+  
 export default function MapScreen() {
   const mapRef = useRef<MapView>(null);
   const [region, setRegion] = useState<Region>({
@@ -89,14 +113,14 @@ export default function MapScreen() {
         zoomEnabled={true}
         zoomControlEnabled={true}
       >
-        {[...narcanPins, ...erPins].map((pin) => (
+        {[...narcanPins, ...erPins, ...alcoholSupportPins].map((pin) => (
           <Marker
             key={pin.id}
             coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
           >
             <View style={styles.emojiMarker}>
               <Text style={styles.emoji}>
-                {pin.title.startsWith('💊') ? '💊' : '🚑'}
+               {pin.title.slice(0, 2)}
               </Text>
             </View>
             <Callout tooltip>
