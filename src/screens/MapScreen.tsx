@@ -58,29 +58,29 @@ const erPins = [
 ];
 
 const alcoholSupportPins = [
-    {
-      id: 'alcohol-1',
-      title: '🍃 ATOD Intervention Services',
-      description: 'Free alcohol education and risk counseling.',
-      latitude: 38.5439,
-      longitude: -121.7510,
-    },
-    {
-      id: 'alcohol-2',
-      title: '🍃 Health Education & Promotion (HEP)',
-      description: 'Party Smart kits and alcohol safety resources.',
-      latitude: 38.5410,
-      longitude: -121.7501,
-    },
-    {
-      id: 'alcohol-3',
-      title: '🍃 The Pantry @ UC Davis',
-      description: 'Hydration kits and wellness supplies.',
-      latitude: 38.5418,
-      longitude: -121.7485,
-    },
-  ];
-  
+  {
+    id: 'alcohol-1',
+    title: '🍃 ATOD Intervention Services',
+    description: 'Free alcohol education and risk counseling.',
+    latitude: 38.5439,
+    longitude: -121.7510,
+  },
+  {
+    id: 'alcohol-2',
+    title: '🍃 Health Education & Promotion (HEP)',
+    description: 'Party Smart kits and alcohol safety resources.',
+    latitude: 38.5410,
+    longitude: -121.7501,
+  },
+  {
+    id: 'alcohol-3',
+    title: '🍃 The Pantry @ UC Davis',
+    description: 'Hydration kits and wellness supplies.',
+    latitude: 38.5418,
+    longitude: -121.7485,
+  },
+];
+
 export default function MapScreen() {
   const mapRef = useRef<MapView>(null);
   const [region, setRegion] = useState<Region>({
@@ -89,6 +89,10 @@ export default function MapScreen() {
     latitudeDelta: 0.01,
     longitudeDelta: 0.01,
   });
+
+  const [showNarcan, setShowNarcan] = useState(true);
+  const [showER, setShowER] = useState(true);
+  const [showAlcohol, setShowAlcohol] = useState(true);
 
   const zoom = (zoomIn: boolean) => {
     const factor = zoomIn ? 0.5 : 2;
@@ -112,26 +116,58 @@ export default function MapScreen() {
         zoomEnabled={true}
         zoomControlEnabled={true}
       >
-        {[...narcanPins, ...erPins, ...alcoholSupportPins].map((pin) => (
-          <Marker
-            key={pin.id}
-            coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
-          >
-            <View style={styles.emojiMarker}>
-              <Text style={styles.emoji}>
-               {pin.title.slice(0, 2)}
-              </Text>
-            </View>
-            <Callout tooltip>
-              <View style={styles.calloutBox}>
-                <Text style={styles.title}>{pin.title}</Text>
-                <Text>{pin.description}</Text>
+        {[...narcanPins, ...erPins, ...alcoholSupportPins]
+          .filter((pin) => {
+            if (pin.title.startsWith('💊') && !showNarcan) return false;
+            if (pin.title.startsWith('🚑') && !showER) return false;
+            if (pin.title.startsWith('🍃') && !showAlcohol) return false;
+            return true;
+          })
+          .map((pin) => (
+            <Marker
+              key={pin.id}
+              coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
+            >
+              <View style={styles.emojiMarker}>
+                <Text style={styles.emoji}>{pin.title.slice(0, 2)}</Text>
               </View>
-            </Callout>
-          </Marker>
-        ))}
+              <Callout tooltip>
+                <View style={styles.calloutBox}>
+                  <Text style={styles.title}>{pin.title}</Text>
+                  <Text>{pin.description}</Text>
+                </View>
+              </Callout>
+            </Marker>
+          ))}
       </MapView>
 
+      {/* 🔘 Filter Buttons */}
+      <View style={styles.legend}>
+        <TouchableOpacity onPress={() => setShowAlcohol(!showAlcohol)}>
+          <Text style={styles.legendText}>
+            {showAlcohol ? '✅ 🍃' : '☐ 🍃'} Alcohol
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setShowNarcan(!showNarcan)}>
+          <Text style={styles.legendText}>
+            {showNarcan ? '✅ 💊' : '☐ 💊'} Narcan
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setShowER(!showER)}>
+          <Text style={styles.legendText}>
+            {showER ? '✅ 🚑' : '☐ 🚑'} Emergency
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* 🧠 Description */}
+      <View style={styles.legendNote}>
+        {showAlcohol && <Text>🍃</Text>}
+        {showNarcan && <Text>💊</Text>}
+        {showER && <Text>🚑</Text>}
+      </View>
+
+      {/* ➕ Zoom Buttons */}
       <View style={styles.zoomControls}>
         <TouchableOpacity onPress={() => zoom(true)} style={styles.zoomButton}>
           <Text style={styles.zoomText}>＋</Text>
@@ -185,5 +221,26 @@ const styles = StyleSheet.create({
   zoomText: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  legend: {
+    position: 'absolute',
+    bottom: 100,
+    left: 10,
+    right: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingVertical: 6,
+    elevation: 5,
+  },
+  legendText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  legendNote: {
+    position: 'absolute',
+    bottom: 80,
+    left: 20,
   },
 });
