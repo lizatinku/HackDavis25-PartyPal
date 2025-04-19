@@ -1,0 +1,44 @@
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# macOS system files
+.DS_Store
+
+# Expo-specific
+.expo/
+.expo-shared/
+web-build/
+dist/
+*.tunnel
+*.expo
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment variables (DO NOT commit your keys!)
+.env
+.env.*
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+
+# Build outputs (if you eject later)
+android/
+ios/
+
+# Metro + Babel cache
+__generated__/
+.babel.cache
+.cache/
+
+# Supabase temp functions and builds (if you use supabase CLI)
+supabase/.temp/
+supabase/functions/.netlify/
+
+# Other misc
+*.log
