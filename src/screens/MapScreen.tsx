@@ -1,4 +1,3 @@
-// src/screens/MapScreen.tsx
 import React, { useRef, useState } from 'react';
 import {
   View,
@@ -15,15 +14,15 @@ const narcanPins = [
     id: 'narcan-1',
     title: '💊 Memorial Union (MU)',
     description: 'Grab Narcan at the Info Desk. No ID needed.',
-    latitude: 38.5433,
-    longitude: -121.7415,
+    latitude: 38.5424,
+    longitude: -121.7494,
   },
   {
     id: 'narcan-2',
     title: '💊 Student Community Centre',
     description: 'Public Narcan locker near main entrance.',
-    latitude: 38.5414,
-    longitude: -121.7516,
+    latitude: 38.5396,
+    longitude: -121.7518,
   },
   {
     id: 'narcan-3',
@@ -39,15 +38,15 @@ const erPins = [
     id: 'er-1',
     title: '🚑 UC Davis Health',
     description: 'Student urgent care. Walk-ins welcome.',
-    latitude: 38.5384,
-    longitude: -121.7602,
+    latitude: 38.5427,
+    longitude: -121.7618,
   },
   {
     id: 'er-2',
     title: '🚑 Sutter Davis Hospital ER',
     description: '24/7 emergency room for all.',
-    latitude: 38.5536,
-    longitude: -121.7732,
+    latitude: 38.5621,
+    longitude: -121.7715,
   },
   {
     id: 'er-3',
@@ -61,7 +60,7 @@ const erPins = [
 const alcoholSupportPins = [
     {
       id: 'alcohol-1',
-      title: '🍃 ADAP (Alcohol & Drug Abuse Program)',
+      title: '🍃 ATOD Intervention Services',
       description: 'Free alcohol education and risk counseling.',
       latitude: 38.5439,
       longitude: -121.7510,
@@ -77,8 +76,8 @@ const alcoholSupportPins = [
       id: 'alcohol-3',
       title: '🍃 The Pantry @ UC Davis',
       description: 'Hydration kits and wellness supplies.',
-      latitude: 38.5426,
-      longitude: -121.7525,
+      latitude: 38.5418,
+      longitude: -121.7485,
     },
   ];
   
