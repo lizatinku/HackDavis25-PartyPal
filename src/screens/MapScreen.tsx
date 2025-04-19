@@ -60,21 +60,21 @@ const erPins = [
 const alcoholSupportPins = [
   {
     id: 'alcohol-1',
-    title: '🍃 ATOD Intervention Services',
+    title: '💧 ATOD Intervention Services',
     description: 'Free alcohol education and risk counseling.',
     latitude: 38.5439,
     longitude: -121.7510,
   },
   {
     id: 'alcohol-2',
-    title: '🍃 Health Education & Promotion (HEP)',
+    title: '💧 Health Education & Promotion (HEP)',
     description: 'Party Smart kits and alcohol safety resources.',
     latitude: 38.5410,
     longitude: -121.7501,
   },
   {
     id: 'alcohol-3',
-    title: '🍃 The Pantry @ UC Davis',
+    title: '💧 The Pantry @ UC Davis',
     description: 'Hydration kits and wellness supplies.',
     latitude: 38.5418,
     longitude: -121.7485,
@@ -120,7 +120,7 @@ export default function MapScreen() {
           .filter((pin) => {
             if (pin.title.startsWith('💊') && !showNarcan) return false;
             if (pin.title.startsWith('🚑') && !showER) return false;
-            if (pin.title.startsWith('🍃') && !showAlcohol) return false;
+            if (pin.title.startsWith('💧') && !showAlcohol) return false;
             return true;
           })
           .map((pin) => (
@@ -145,7 +145,7 @@ export default function MapScreen() {
       <View style={styles.legend}>
         <TouchableOpacity onPress={() => setShowAlcohol(!showAlcohol)}>
           <Text style={styles.legendText}>
-            {showAlcohol ? '✅ 🍃' : '☐ 🍃'} Alcohol
+            {showAlcohol ? '✅ 💧' : '☐ 💧'} Alcohol
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setShowNarcan(!showNarcan)}>
@@ -162,7 +162,7 @@ export default function MapScreen() {
 
       {/* 🧠 Description */}
       <View style={styles.legendNote}>
-        {showAlcohol && <Text>🍃</Text>}
+        {showAlcohol && <Text>💧</Text>}
         {showNarcan && <Text>💊</Text>}
         {showER && <Text>🚑</Text>}
       </View>
