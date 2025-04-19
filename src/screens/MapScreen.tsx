@@ -20,7 +20,7 @@ const narcanPins = [
   },
   {
     id: 'narcan-2',
-    title: '💊 Student Community Centre ',
+    title: '💊 Student Community Centre',
     description: 'Public Narcan locker near main entrance.',
     latitude: 38.5414,
     longitude: -121.7516,
@@ -31,6 +31,30 @@ const narcanPins = [
     description: 'Narcan access in 24/7 study room.',
     latitude: 38.5397,
     longitude: -121.7492,
+  },
+];
+
+const erPins = [
+  {
+    id: 'er-1',
+    title: '🚑 UC Davis Health',
+    description: 'Student urgent care. Walk-ins welcome.',
+    latitude: 38.5384,
+    longitude: -121.7602,
+  },
+  {
+    id: 'er-2',
+    title: '🚑 Sutter Davis Hospital ER',
+    description: '24/7 emergency room for all.',
+    latitude: 38.5536,
+    longitude: -121.7732,
+  },
+  {
+    id: 'er-3',
+    title: '🚑 Dignity Health – Davis Specialty Care',
+    description: 'Specialty care services in Davis.',
+    latitude: 38.5534,
+    longitude: -121.7631,
   },
 ];
 
@@ -65,13 +89,15 @@ export default function MapScreen() {
         zoomEnabled={true}
         zoomControlEnabled={true}
       >
-        {narcanPins.map((pin) => (
+        {[...narcanPins, ...erPins].map((pin) => (
           <Marker
             key={pin.id}
             coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
           >
             <View style={styles.emojiMarker}>
-              <Text style={styles.emoji}>💊</Text>
+              <Text style={styles.emoji}>
+                {pin.title.startsWith('💊') ? '💊' : '🚑'}
+              </Text>
             </View>
             <Callout tooltip>
               <View style={styles.calloutBox}>
