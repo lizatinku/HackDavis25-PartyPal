@@ -160,13 +160,6 @@ export default function MapScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* 🧠 Description */}
-      <View style={styles.legendNote}>
-        {showAlcohol && <Text>💧</Text>}
-        {showNarcan && <Text>💊</Text>}
-        {showER && <Text>🚑</Text>}
-      </View>
-
       {/* ➕ Zoom Buttons */}
       <View style={styles.zoomControls}>
         <TouchableOpacity onPress={() => zoom(true)} style={styles.zoomButton}>
@@ -224,7 +217,7 @@ const styles = StyleSheet.create({
   },
   legend: {
     position: 'absolute',
-    bottom: 100,
+    top: 30,
     left: 10,
     right: 10,
     flexDirection: 'row',
