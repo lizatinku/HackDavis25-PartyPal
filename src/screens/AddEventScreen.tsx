@@ -11,33 +11,46 @@ import {
 import { supabase } from '../lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 
+type EventForm = {
+  title: string;
+  description: string;
+  location: string;
+  latitude: string;
+  longitude: string;
+  start_time: string;
+  has_alcohol: boolean;
+  'smoking/weed': boolean;
+  narcan_availability: boolean;
+  vibe: string;
+  activities: string;
+};
+
 export default function AddEventScreen({ navigation }: any) {
-  const [form, setForm] = useState({
-    name: '',
-    date: '',
+  const [form, setForm] = useState<EventForm>({
+    title: '',
+    description: '',
     location: '',
-    vibe: 'chill',
-    hasAlcohol: false,
-    byob: false,
-    narcan: false,
+    latitude: '',
+    longitude: '',
+    start_time: '',
+    has_alcohol: false,
+    'smoking/weed': false,
+    narcan_availability: false,
+    vibe: '',
     activities: '',
   });
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = (key: keyof EventForm, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleAddEvent = async () => {
     const newEvent = {
       id: uuidv4(),
-      title: form.name,
-      start_time: form.date,
-      location: form.location,
+      ...form,
+      latitude: parseFloat(form.latitude),
+      longitude: parseFloat(form.longitude),
       public: true,
-      has_alcohol: form.hasAlcohol,
-      byob: form.byob,
-      vibe: form.vibe,
-      activities: form.activities.split(',').map((a) => a.trim()).join(', '),
     };
 
     const { error } = await supabase.from('events').insert(newEvent);
@@ -50,63 +63,56 @@ export default function AddEventScreen({ navigation }: any) {
     }
   };
 
+  const textFields: { key: keyof EventForm; label: string }[] = [
+    { key: 'title', label: 'Title' },
+    { key: 'description', label: 'Description' },
+    { key: 'location', label: 'Location' },
+    { key: 'latitude', label: 'Latitude' },
+    { key: 'longitude', label: 'Longitude' },
+    { key: 'start_time', label: 'Start time (YYYY-MM-DD HH:MM)' },
+    { key: 'vibe', label: 'Vibe (chill, rowdy, rager)' },
+    { key: 'activities', label: 'Activities (comma separated)' },
+  ];
+
+  const toggleFields: { key: keyof EventForm; label: string }[] = [
+    { key: 'has_alcohol', label: 'Has Alcohol' },
+    { key: 'smoking/weed', label: 'Smoking/Weed' },
+    { key: 'narcan_availability', label: 'Narcan Available' },
+  ];
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.formCard}>
         <Text style={styles.title}>➕ Add New Event</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          placeholderTextColor="#aaa"
-          value={form.name}
-          onChangeText={(text) => handleChange('name', text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Date"
-          placeholderTextColor="#aaa"
-          value={form.date}
-          onChangeText={(text) => handleChange('date', text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Location"
-          placeholderTextColor="#aaa"
-          value={form.location}
-          onChangeText={(text) => handleChange('location', text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Activities (comma separated)"
-          placeholderTextColor="#aaa"
-          value={form.activities}
-          onChangeText={(text) => handleChange('activities', text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Vibe (chill, rowdy, rager)"
-          placeholderTextColor="#aaa"
-          value={form.vibe}
-          onChangeText={(text) => handleChange('vibe', text)}
-        />
+
+        {textFields.map(({ key, label }) => (
+          <TextInput
+            key={key}
+            style={styles.input}
+            placeholder={label}
+            placeholderTextColor="#aaa"
+            value={form[key]?.toString()}
+            onChangeText={(text) => handleChange(key, text)}
+          />
+        ))}
 
         <View style={styles.toggleRow}>
-          {['has_alcohol', 'smoking/weed', 'narcan_availability'].map((key) => (
+          {toggleFields.map(({ key, label }) => (
             <TouchableOpacity
               key={key}
               onPress={() =>
-                handleChange(key, !form[key as keyof typeof form])
+                handleChange(key, !form[key])
               }
             >
               <Text style={styles.toggleText}>
-                {form[key as keyof typeof form] ? '✅' : '⬜'} {key}
+                {form[key] ? '✅' : '⬜'} {label}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
         <TouchableOpacity style={styles.addButton} onPress={handleAddEvent}>
-          <Text style={{ color: '#000', fontWeight: 'bold' }}>Add Event</Text>
+          <Text style={styles.addButtonText}>Add Event</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -125,33 +131,41 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: '#333',
     borderWidth: 1,
-    gap: 8,
+    gap: 10,
+  },
+  title: {
+    color: '#DCDCDC',
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 12,
   },
   input: {
     backgroundColor: '#1e1e1e',
-    color: '#fff',
-    padding: 10,
-    borderRadius: 6,
+    color: '#DCDCDC',
+    padding: 12,
+    borderRadius: 8,
+    fontSize: 15,
   },
   toggleRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 12,
   },
   toggleText: {
-    color: '#fff',
-    fontSize: 12,
+    color: '#DCDCDC',
+    fontSize: 14,
   },
   addButton: {
-    marginTop: 8,
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 6,
+    marginTop: 16,
+    backgroundColor: '#B581CD',
+    padding: 12,
+    borderRadius: 8,
     alignItems: 'center',
   },
-  title: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 8,
+  addButtonText: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

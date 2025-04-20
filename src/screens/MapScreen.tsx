@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   zoomButton: {
-    backgroundColor: '#fff',
+    backgroundColor: '#DCDCDC',
     borderRadius: 25,
     padding: 10,
     elevation: 5,
@@ -315,6 +315,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 24,
-    color: '#fff',
+    color: '#DCDCDC',
   },
 });

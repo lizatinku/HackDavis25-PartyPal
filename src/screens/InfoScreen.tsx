@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   header: {
-    color: '#fff',
+    color: '#DCDCDC',
     fontSize: 30,
     fontFamily: 'Quicksand-Bold',
     textAlign: 'center',
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   sectionTitle: {
-    color: '#fff',
+    color: '#DCDCDC',
     fontSize: 25,
     fontFamily: 'Quicksand-SemiBold',
     textAlign: 'center',
@@ -94,12 +94,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   eventLabel: {
-    color: '#fff',
+    color: '#DCDCDC',
     fontSize: 20,
     fontFamily: 'Quicksand-Medium',
   },
   mapLabel: {
-    color: '#fff',
+    color: '#DCDCDC',
     fontSize: 16,
     fontFamily: 'Quicksand-Medium',
   },

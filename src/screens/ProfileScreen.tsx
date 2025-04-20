@@ -120,10 +120,10 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 8,
   },
-  settingsText: { fontSize: 20, color: '#fff' },
+  settingsText: { fontSize: 20, color: '#DCDCDC' },
   name: {
     fontSize: 22,
-    color: '#fff',
+    color: '#DCDCDC',
     fontWeight: '700',
     marginTop: 12,
   },
@@ -148,11 +148,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   activeTab: {
-    borderBottomColor: '#fff',
+    borderBottomColor: '#DCDCDC',
     borderBottomWidth: 2,
   },
   activeTabText: {
-    color: '#fff',
+    color: '#DCDCDC',
     fontWeight: '700',
   },
   eventsList: {
@@ -197,10 +197,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 12,
-    color: '#fff',
+    color: '#DCDCDC',
   },
   eventTitle: {
-    color: '#fff',
+    color: '#DCDCDC',
     fontSize: 16,
     fontWeight: '700',
   },

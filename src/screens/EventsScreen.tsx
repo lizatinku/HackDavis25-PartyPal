@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import * as Location from 'expo-location';
+
+import alcIcon from '../../assets/images/alc-icon.png';
+import alcIconSelected from '../../assets/images/alc-icon-selected.png';
+import weedIcon from '../../assets/images/weed-icon.png';
+import weedIconSelected from '../../assets/images/weed-icon-selected.png';
+import narcIcon from '../../assets/images/narc-icon.png';
+import narcIconSelected from '../../assets/images/narc-icon-selected.png';
+
 import {
   View,
   Text,
@@ -8,6 +16,7 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  Image,
   ImageBackground,
 } from 'react-native';
 
@@ -54,7 +63,7 @@ function getEventImage(title: string) {
   if (lower.includes('wine')) return require('../../assets/images/wine.png');
   if (lower.includes('lawn')) return require('../../assets/images/lawntopia.png');
   if (lower.includes('larry')) return require('../../assets/images/larry.png');
-  // return require('../../assets/images/default.png'); // fallback image
+  return null;
 }
 
 export default function EventsScreen() {
@@ -70,7 +79,6 @@ export default function EventsScreen() {
 
   const filtered = events.filter((event) => {
     if (event.title.toLowerCase().includes('bbq with bros')) return false;
-
     if (!event.latitude || !event.longitude || !userLocation) return false;
 
     const distance = haversine(userLocation.latitude, userLocation.longitude, event.latitude, event.longitude);
@@ -105,7 +113,6 @@ export default function EventsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* 🔍 Search */}
       <TextInput
         style={styles.searchInput}
         placeholder="🔍 Search events"
@@ -114,7 +121,7 @@ export default function EventsScreen() {
         onChangeText={setSearch}
       />
 
-      {/* 📍 Distance + Filters */}
+      {/* Distance + Filters */}
       <View style={styles.rowInline}>
         <View>
           <TouchableOpacity
@@ -147,23 +154,29 @@ export default function EventsScreen() {
           )}
         </View>
 
-        {/* Filters */}
-        <View style={styles.emojiFilterRow}>
-          {['alcohol', 'byob', 'narcan'].map((key) => (
-            <TouchableOpacity
-              key={key}
-              onPress={() => toggleFilter(key as keyof typeof filters)}
-            >
-              <Text style={styles.filterBtn}>
-                {filters[key as keyof typeof filters] ? '✅' : '⬜'}{' '}
-                {key === 'alcohol' ? '🍻' : key === 'byob' ? '🍾' : '💊'}
-              </Text>
-            </TouchableOpacity>
-          ))}
+        {/* Image Filters */}
+        <View style={styles.iconFilterRow}>
+          <TouchableOpacity onPress={() => toggleFilter('alcohol')}>
+            <Image
+              source={filters.alcohol ? alcIconSelected : alcIcon}
+              style={styles.filterIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => toggleFilter('byob')}>
+            <Image
+              source={filters.byob ? weedIconSelected : weedIcon}
+              style={styles.filterIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => toggleFilter('narcan')}>
+            <Image
+              source={filters.narcan ? narcIconSelected : narcIcon}
+              style={styles.filterIcon}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
-      {/* 📅 Events */}
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
@@ -194,7 +207,6 @@ export default function EventsScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
   searchInput: {
@@ -202,8 +214,9 @@ const styles = StyleSheet.create({
     padding: 15,
     marginHorizontal: 22,
     marginTop: 30,
+    marginBottom: 10,
     borderRadius: 12,
-    color: '#fff',
+    color: '#DCDCDC',
     fontSize: 16,
     borderWidth: 1,
     borderColor: '#333',
@@ -223,7 +236,7 @@ const styles = StyleSheet.create({
     borderColor: '#444',
   },
   pillText: {
-    color: '#fff',
+    color: '#DCDCDC',
     fontSize: 13,
   },
   dropdown: {
@@ -235,7 +248,7 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   dropdownItem: {
-    color: '#fff',
+    color: '#DCDCDC',
     padding: 8,
     fontSize: 13,
     borderRadius: 8,
@@ -245,14 +258,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     borderRadius: 6,
   },
-  emojiFilterRow: {
+  iconFilterRow: {
     flexDirection: 'row',
     gap: 12,
-    marginLeft: 8,
+    alignItems: 'center',
   },
-  filterBtn: {
-    color: '#fff',
-    fontSize: 18,
+  filterIcon: {
+    width: 32,
+    height: 32,
+    resizeMode: 'contain',
   },
   card: {
     marginBottom: 16,
@@ -281,7 +295,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   title: {
-    color: '#fff',
+    color: '#DCDCDC',
     fontSize: 16,
     fontWeight: '700',
   },
