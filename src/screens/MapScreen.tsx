@@ -98,6 +98,17 @@ export default function MapScreen() {
     longitudeDelta: 0.01,
   });
 
+  const [selectedFilters, setSelectedFilters] = useState({
+    alcohol: true,
+    narcan: true,
+    er: true,
+    police: true,
+    social: true,
+  });
+
+  const toggleFilter = (key: keyof typeof selectedFilters) =>
+    setSelectedFilters((prev) => ({ ...prev, [key]: !prev[key] }));
+
   const zoom = (zoomIn: boolean) => {
     const factor = zoomIn ? 0.5 : 2;
     const newRegion = {
@@ -109,7 +120,7 @@ export default function MapScreen() {
     mapRef.current?.animateToRegion(newRegion, 200);
   };
 
-  const focusOnGroup = (pins: typeof narcanPins) => {
+  const focusOnGroup = (pins: { latitude: number; longitude: number }[]) => {
     const avgLat = pins.reduce((sum, p) => sum + p.latitude, 0) / pins.length;
     const avgLon = pins.reduce((sum, p) => sum + p.longitude, 0) / pins.length;
     const newRegion = {
@@ -141,15 +152,15 @@ export default function MapScreen() {
         style={styles.map}
         initialRegion={region}
         region={region}
-        zoomEnabled={true}
-        zoomControlEnabled={true}
+        zoomEnabled
+        zoomControlEnabled
       >
-        {[...narcanPins, ...erPins, ...alcoholSupportPins, policeStation]
+        {[...(selectedFilters.narcan ? narcanPins : []),
+          ...(selectedFilters.er ? erPins : []),
+          ...(selectedFilters.alcohol ? alcoholSupportPins : []),
+          ...(selectedFilters.police ? [policeStation] : [])]
           .map((pin) => (
-            <Marker
-              key={pin.id}
-              coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
-            >
+            <Marker key={pin.id} coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}>
               <View style={styles.emojiMarker}>
                 <Text style={styles.emoji}>{pin.title.slice(0, 2)}</Text>
               </View>
@@ -165,21 +176,27 @@ export default function MapScreen() {
 
       {/* Sidebar Navigation */}
       <View style={styles.sidebar}>
-      <TouchableOpacity onPress={() => focusOnGroup(narcanPins)}>
-          <Text style={styles.icon}>🎉</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={focusPolice}>
-          <Text style={styles.icon}>🚓</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => focusOnGroup(erPins)}>
-          <Text style={styles.icon}>🚑</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => focusOnGroup(narcanPins)}>
-          <Text style={styles.icon}>💊</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => focusOnGroup(alcoholSupportPins)}>
-          <Text style={styles.icon}>🩹</Text>
-        </TouchableOpacity>
+        {[
+          { key: 'social', icon: '🎉', onPress: () => focusOnGroup(narcanPins) },
+          { key: 'police', icon: '🚓', onPress: focusPolice },
+          { key: 'er', icon: '🚑', onPress: () => focusOnGroup(erPins) },
+          { key: 'narcan', icon: '💊', onPress: () => focusOnGroup(narcanPins) },
+          { key: 'alcohol', icon: '🩹', onPress: () => focusOnGroup(alcoholSupportPins) },
+        ].map(({ key, icon, onPress }) => (
+          <TouchableOpacity key={key} onPress={() => {
+            toggleFilter(key as keyof typeof selectedFilters);
+            onPress();
+          }}>
+            <View
+              style={[
+                styles.iconWrapper,
+                selectedFilters[key as keyof typeof selectedFilters] && styles.iconSelected,
+              ]}
+            >
+              <Text style={styles.icon}>{icon}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
       </View>
 
       {/* Zoom Buttons */}
@@ -235,10 +252,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  icon: {
-    fontSize: 24,
-    color: '#fff',
-  },
   sidebar: {
     position: 'absolute',
     top: 100,
@@ -250,5 +263,16 @@ const styles = StyleSheet.create({
     gap: 12,
     alignItems: 'center',
     elevation: 8,
+  },
+  iconWrapper: {
+    borderRadius: 20,
+    padding: 6,
+  },
+  iconSelected: {
+    backgroundColor: '#B581CD',
+  },
+  icon: {
+    fontSize: 24,
+    color: '#fff',
   },
 });

@@ -16,7 +16,7 @@ const sampleEvents = [
     title: 'Lawntopia',
     date: 'May 4th @ 6:40pm',
     location: 'Davis, CA',
-    // image: require('../assets/images/lawntopia.jpg'),
+    image: require('../../assets/images/lawntopia.png'),
     tags: ['🍻', '🌿', '💊'],
   },
   {
@@ -24,7 +24,7 @@ const sampleEvents = [
     title: 'Theta Chi White Lies Party',
     date: 'April 26th @ 6:40pm',
     location: 'Davis, CA',
-    // image: require('../assets/images/thetachi.jpg'),
+    image: require('../../assets/images/theta-chi.png'),
     tags: ['🍻', '🌿', '💊'],
   },
 ];
@@ -77,8 +77,7 @@ export default function ProfileScreen() {
         contentContainerStyle={styles.eventsList}
         renderItem={({ item }) => (
           <View style={styles.eventCard}>
-            {/* Placeholder instead of image */}
-            <View style={styles.imagePlaceholder} />
+            <Image source={item.image} style={styles.imagePlaceholder} />
 
             <View style={styles.eventOverlay}>
               <View style={styles.eventTags}>
@@ -170,16 +169,27 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 180,
     backgroundColor: '#444',
+    position: 'relative',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: 'hidden',
   },
   eventOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     padding: 12,
-    gap: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    zIndex: 1,
   },
   eventTags: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 8,
-    marginBottom: 4,
+    gap: 6,
+    zIndex: 2,
   },
   tag: {
     fontSize: 16,

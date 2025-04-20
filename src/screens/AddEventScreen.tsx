@@ -91,7 +91,7 @@ export default function AddEventScreen({ navigation }: any) {
         />
 
         <View style={styles.toggleRow}>
-          {['hasAlcohol', 'byob', 'narcan'].map((key) => (
+          {['has_alcohol', 'smoking/weed', 'narcan_availability'].map((key) => (
             <TouchableOpacity
               key={key}
               onPress={() =>
