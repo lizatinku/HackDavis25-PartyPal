@@ -4,7 +4,7 @@ import EventsScreen from './src/screens/EventsScreen';
 import MapScreen from './src/screens/MapScreen';
 import AddEventScreen from './src/screens/AddEventScreen';
 import InfoScreen from './src/screens/InfoScreen';
-import ProfileScreen from './src/screens/EventsScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, StyleSheet, View, Text } from 'react-native';
 import { useFonts } from 'expo-font';
