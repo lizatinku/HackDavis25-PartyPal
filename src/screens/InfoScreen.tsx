@@ -45,11 +45,11 @@ export default function InfoScreen() {
           <Text style={styles.mapLabel}>Overdose Relief (Narcan)</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.emoji}>❤️‍🩹</Text>
+          <Text style={styles.emoji}>🫀</Text>
           <Text style={styles.mapLabel}>Defibrillator</Text>
         </View>
         <View style={styles.row}>
-          <Text style={styles.emoji}>🪢</Text>
+          <Text style={styles.emoji}>🩹</Text>
           <Text style={styles.mapLabel}>Substance Abuse Rehab Centers</Text>
         </View>
       </View>

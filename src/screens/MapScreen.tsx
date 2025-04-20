@@ -9,6 +9,37 @@ import {
 } from 'react-native';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 
+const EventPins = [
+  {
+    id: 'event-1',
+    title: '🎉 Theta Chi White Lies Party',
+    description: 'April 26, 8 PM\n501 Russell Blvd, Davis CA',
+    latitude: 38.5465,
+    longitude: -121.7553,
+  },
+  {
+    id: 'event-2',
+    title: '🎉 Lawntopia',
+    description: 'May 4, 6:40 PM\n750 Orchard Rd, Davis, CA',
+    latitude: 38.5416,
+    longitude: -121.7596,
+  },
+  {
+    id: 'event-3',
+    title: '🎉 Rutherford Wine Tasting',
+    description: 'April 24, 6 PM\nDixon, CA',
+    latitude: 38.4467,
+    longitude: -121.8235,
+  },
+  {
+    id: 'event-4',
+    title: "🎉 Larry's Kickback",
+    description: 'May 18, 10 PM\nBeamer Park, Woodland CA',
+    latitude: 38.6786,
+    longitude: -121.7779,
+  },
+];
+
 const narcanPins = [
   {
     id: 'narcan-1',
@@ -81,13 +112,30 @@ const alcoholSupportPins = [
   },
 ];
 
-const policeStation = {
-  id: 'police-1',
-  title: '🚓 Davis Police Department',
-  description: 'Open: MTWThF\n10 AM - 5:30 PM',
-  latitude: 38.5513,
-  longitude: -121.7193,
-};
+const policePins = [
+  {
+    id: 'police-1',
+    title: '🚓 Davis Police Department',
+    description: 'Open: MTWThF\n10 AM - 5:30 PM',
+    latitude: 38.5513,
+    longitude: -121.7193,
+  },
+  {
+    id: 'police-2',
+    title: '🚓 Saferide @ Kearney Hall',
+    description: 'Call for SafeRide service.\nAvailable everyday 8 PM - 2 AM.',
+    latitude: 38.5360,
+    longitude: -121.7586,
+  },
+  {
+    id: 'police-3',
+    title: '🚓 ARC Security Desk',
+    description: 'ARC assistance + SafeRide info.\nOpen: M-F\n5 AM - 12 PM',
+    latitude: 38.5432,
+    longitude: -121.7597,
+  },
+];
+
 
 export default function MapScreen() {
   const mapRef = useRef<MapView>(null);
@@ -134,15 +182,8 @@ export default function MapScreen() {
   };
 
   const focusPolice = () => {
-    const newRegion = {
-      latitude: policeStation.latitude,
-      longitude: policeStation.longitude,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    };
-    setRegion(newRegion);
-    mapRef.current?.animateToRegion(newRegion, 200);
-  };
+    focusOnGroup(policePins);
+  };  
 
   return (
     <View style={styles.container}>
@@ -156,9 +197,10 @@ export default function MapScreen() {
         zoomControlEnabled
       >
         {[...(selectedFilters.narcan ? narcanPins : []),
+          ...(selectedFilters.social ? EventPins : []),
           ...(selectedFilters.er ? erPins : []),
           ...(selectedFilters.alcohol ? alcoholSupportPins : []),
-          ...(selectedFilters.police ? [policeStation] : [])]
+          ...(selectedFilters.police ? policePins : [])]
           .map((pin) => (
             <Marker key={pin.id} coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}>
               <View style={styles.emojiMarker}>
@@ -177,7 +219,7 @@ export default function MapScreen() {
       {/* Sidebar Navigation */}
       <View style={styles.sidebar}>
         {[
-          { key: 'social', icon: '🎉', onPress: () => focusOnGroup(narcanPins) },
+          { key: 'social', icon: '🎉', onPress: () => focusOnGroup(EventPins) },
           { key: 'police', icon: '🚓', onPress: focusPolice },
           { key: 'er', icon: '🚑', onPress: () => focusOnGroup(erPins) },
           { key: 'narcan', icon: '💊', onPress: () => focusOnGroup(narcanPins) },
