@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import * as Location from 'expo-location';
-
 import {
   View,
   Text,
@@ -9,6 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  ImageBackground,
 } from 'react-native';
 
 type Event = {
@@ -29,22 +29,38 @@ const distanceOptions = [5, 15, 25, 50];
 
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
   const toRad = (x: number) => (x * Math.PI) / 180;
-  const R = 6371; // km
+  const R = 6371;
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
   const a =
     Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 0.621371; // miles
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 0.621371;
+}
+
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr);
+  return date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
+function getEventImage(title: string) {
+  const lower = title.toLowerCase();
+  if (lower.includes('theta')) return require('../../assets/images/theta-chi.png');
+  if (lower.includes('wine')) return require('../../assets/images/wine.png');
+  if (lower.includes('lawn')) return require('../../assets/images/lawntopia.png');
+  if (lower.includes('larry')) return require('../../assets/images/larry.png');
+  // return require('../../assets/images/default.png'); // fallback image
 }
 
 export default function EventsScreen() {
   const [filters, setFilters] = useState({ alcohol: false, byob: false, narcan: false });
   const [search, setSearch] = useState('');
   const [events, setEvents] = useState<Event[]>([]);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [selectedDistance, setSelectedDistance] = useState(5);
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -53,6 +69,8 @@ export default function EventsScreen() {
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const filtered = events.filter((event) => {
+    if (event.title.toLowerCase().includes('bbq with bros')) return false;
+
     if (!event.latitude || !event.longitude || !userLocation) return false;
 
     const distance = haversine(userLocation.latitude, userLocation.longitude, event.latitude, event.longitude);
@@ -96,9 +114,8 @@ export default function EventsScreen() {
         onChangeText={setSearch}
       />
 
-      {/* 📍 Distance + Filters all in one row */}
+      {/* 📍 Distance + Filters */}
       <View style={styles.rowInline}>
-        {/* Distance Dropdown */}
         <View>
           <TouchableOpacity
             style={styles.distancePill}
@@ -130,7 +147,7 @@ export default function EventsScreen() {
           )}
         </View>
 
-        {/* Emoji Filters */}
+        {/* Filters */}
         <View style={styles.emojiFilterRow}>
           {['alcohol', 'byob', 'narcan'].map((key) => (
             <TouchableOpacity
@@ -146,33 +163,33 @@ export default function EventsScreen() {
         </View>
       </View>
 
-      {/* 📅 Events List */}
+      {/* 📅 Events */}
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16 }}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() =>
-              setExpandedId(expandedId === item.id ? null : item.id)
-            }
-          >
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.meta}>{item.start_time}</Text>
-            <Text style={styles.meta}>{item.location}</Text>
-            <Text style={styles.meta}>🔥 {item.vibe.toUpperCase()}</Text>
-
-            {expandedId === item.id && (
-              <View style={styles.details}>
-                <Text>🍻 Alcohol: {item.has_alcohol ? 'Yes' : 'No'}</Text>
-                <Text>🍾 BYOB: {item.byob ? 'Yes' : 'No'}</Text>
-                <Text>💊 Narcan: {item.narcan ? 'Yes' : 'No'}</Text>
-                <Text>🎮 Activities: {item.activities}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => {
+          const image = getEventImage(item.title);
+          return (
+            <TouchableOpacity style={styles.card}>
+              <ImageBackground
+                source={image}
+                style={styles.imageBackground}
+                imageStyle={styles.imageRadius}
+              >
+                <View style={styles.overlay}>
+                  <View style={styles.eventHeader}>
+                    <View style={styles.leftBlock}>
+                      <Text style={styles.title}>{item.title}</Text>
+                      <Text style={styles.meta}>{formatDate(item.start_time)}</Text>
+                    </View>
+                    <Text style={styles.location}>{item.location}</Text>
+                  </View>
+                </View>
+              </ImageBackground>
+            </TouchableOpacity>
+          );
+        }}
       />
     </View>
   );
@@ -212,7 +229,7 @@ const styles = StyleSheet.create({
   dropdown: {
     backgroundColor: '#222',
     borderRadius: 10,
-    marginTop: 5,
+    marginTop: 10,
     padding: 6,
     position: 'absolute',
     zIndex: 1000,
@@ -238,28 +255,44 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   card: {
-    backgroundColor: '#111',
-    padding: 14,
-    marginBottom: 12,
-    borderRadius: 18,
-    borderColor: '#333',
-    borderWidth: 1,
+    marginBottom: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  imageBackground: {
+    width: '100%',
+    height: 140,
+    justifyContent: 'flex-end',
+  },
+  imageRadius: {
+    borderRadius: 20,
+  },
+  overlay: {
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    padding: 12,
+  },
+  eventHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  leftBlock: {
+    flex: 1,
+    paddingRight: 10,
   },
   title: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
-    marginBottom: 4,
   },
   meta: {
     color: '#ccc',
     fontSize: 13,
   },
-  details: {
-    marginTop: 8,
-    borderTopColor: '#333',
-    borderTopWidth: 1,
-    paddingTop: 8,
-    gap: 4,
+  location: {
+    color: '#ccc',
+    fontSize: 13,
+    textAlign: 'right',
+    maxWidth: 100,
   },
 });
