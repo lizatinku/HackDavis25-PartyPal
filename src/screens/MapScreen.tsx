@@ -13,23 +13,23 @@ const narcanPins = [
   {
     id: 'narcan-1',
     title: '💊 Memorial Union (MU)',
-    description: 'Grab Narcan at the Info Desk. No ID needed.',
+    description: 'Grab Narcan at the Info Desk. No ID needed.\nOpen: MTWThF \n7 AM - 11PM',
     latitude: 38.5424,
     longitude: -121.7494,
   },
   {
     id: 'narcan-2',
     title: '💊 Student Community Centre',
-    description: 'Public Narcan locker near main entrance.',
+    description: 'Narcan locker near main entrance.',
     latitude: 38.5396,
     longitude: -121.7518,
   },
   {
     id: 'narcan-3',
-    title: '💊 Shields Library',
-    description: 'Narcan access in 24/7 study room.',
-    latitude: 38.5397,
-    longitude: -121.7492,
+    title: '💊 Activities and Recreation Centre (ARC)',
+    description: 'Available near front desk. Open: MTWThF \n5 AM - 11PM',
+    latitude: 38.5431,
+    longitude: -121.7597,
   },
 ];
 
@@ -37,49 +37,57 @@ const erPins = [
   {
     id: 'er-1',
     title: '🚑 UC Davis Health',
-    description: 'Student urgent care. Walk-ins welcome.',
+    description: 'Student urgent care. \nOpen: MTWThF \n9 AM - 5PM',
     latitude: 38.5427,
     longitude: -121.7618,
   },
   {
     id: 'er-2',
     title: '🚑 Sutter Davis Hospital ER',
-    description: '24/7 emergency room for all.',
+    description: 'Emergency room for all.\nOpen: 24/7',
     latitude: 38.5621,
     longitude: -121.7715,
   },
   {
     id: 'er-3',
-    title: '🚑 Dignity Health – Davis Specialty Care',
-    description: 'Specialty care services in Davis.',
-    latitude: 38.5534,
-    longitude: -121.7631,
+    title: '🚑 UC Davis Fire Department',
+    description: 'Fire and emergency services.\nOpen: 24/7',
+    latitude: 38.5405,
+    longitude: -121.7579,
   },
 ];
 
 const alcoholSupportPins = [
   {
     id: 'alcohol-1',
-    title: '💧 ATOD Intervention Services',
-    description: 'Free alcohol education and risk counseling.',
+    title: '🩹 ATOD Intervention Services',
+    description: 'Free alcohol education and risk counseling.\nOpen: M–F\n10 AM - 5 PM',
     latitude: 38.5439,
     longitude: -121.7510,
   },
   {
     id: 'alcohol-2',
-    title: '💧 Health Education & Promotion (HEP)',
-    description: 'Party Smart kits and alcohol safety resources.',
+    title: '🩹 Health Education & Promotion (HEP)',
+    description: 'Party Smart kits and alcohol safety resources.\nOpen: M-F\n9 AM - 4 PM',
     latitude: 38.5410,
     longitude: -121.7501,
   },
   {
     id: 'alcohol-3',
-    title: '💧 The Pantry @ UC Davis',
-    description: 'Hydration kits and wellness supplies.',
-    latitude: 38.5418,
-    longitude: -121.7485,
+    title: '🩹 The Pantry @ UC Davis',
+    description: 'Hydration kits and wellness supplies.\nOpen: M-F\n10 AM - 5:30 PM',
+    latitude: 38.5423,
+    longitude: -121.7489,
   },
 ];
+
+const policeStation = {
+  id: 'police-1',
+  title: '🚓 Davis Police Department',
+  description: 'Open: MTWThF\n10 AM - 5:30 PM',
+  latitude: 38.5513,
+  longitude: -121.7193,
+};
 
 export default function MapScreen() {
   const mapRef = useRef<MapView>(null);
@@ -90,16 +98,36 @@ export default function MapScreen() {
     longitudeDelta: 0.01,
   });
 
-  const [showNarcan, setShowNarcan] = useState(true);
-  const [showER, setShowER] = useState(true);
-  const [showAlcohol, setShowAlcohol] = useState(true);
-
   const zoom = (zoomIn: boolean) => {
     const factor = zoomIn ? 0.5 : 2;
     const newRegion = {
       ...region,
       latitudeDelta: region.latitudeDelta * factor,
       longitudeDelta: region.longitudeDelta * factor,
+    };
+    setRegion(newRegion);
+    mapRef.current?.animateToRegion(newRegion, 200);
+  };
+
+  const focusOnGroup = (pins: typeof narcanPins) => {
+    const avgLat = pins.reduce((sum, p) => sum + p.latitude, 0) / pins.length;
+    const avgLon = pins.reduce((sum, p) => sum + p.longitude, 0) / pins.length;
+    const newRegion = {
+      latitude: avgLat,
+      longitude: avgLon,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    };
+    setRegion(newRegion);
+    mapRef.current?.animateToRegion(newRegion, 200);
+  };
+
+  const focusPolice = () => {
+    const newRegion = {
+      latitude: policeStation.latitude,
+      longitude: policeStation.longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
     };
     setRegion(newRegion);
     mapRef.current?.animateToRegion(newRegion, 200);
@@ -116,13 +144,7 @@ export default function MapScreen() {
         zoomEnabled={true}
         zoomControlEnabled={true}
       >
-        {[...narcanPins, ...erPins, ...alcoholSupportPins]
-          .filter((pin) => {
-            if (pin.title.startsWith('💊') && !showNarcan) return false;
-            if (pin.title.startsWith('🚑') && !showER) return false;
-            if (pin.title.startsWith('💧') && !showAlcohol) return false;
-            return true;
-          })
+        {[...narcanPins, ...erPins, ...alcoholSupportPins, policeStation]
           .map((pin) => (
             <Marker
               key={pin.id}
@@ -141,26 +163,26 @@ export default function MapScreen() {
           ))}
       </MapView>
 
-      {/* 🔘 Filter Buttons */}
-      <View style={styles.legend}>
-        <TouchableOpacity onPress={() => setShowAlcohol(!showAlcohol)}>
-          <Text style={styles.legendText}>
-            {showAlcohol ? '✅ 💧' : '☐ 💧'} Alcohol
-          </Text>
+      {/* Sidebar Navigation */}
+      <View style={styles.sidebar}>
+      <TouchableOpacity onPress={() => focusOnGroup(narcanPins)}>
+          <Text style={styles.icon}>🎉</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setShowNarcan(!showNarcan)}>
-          <Text style={styles.legendText}>
-            {showNarcan ? '✅ 💊' : '☐ 💊'} Narcan
-          </Text>
+        <TouchableOpacity onPress={focusPolice}>
+          <Text style={styles.icon}>🚓</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setShowER(!showER)}>
-          <Text style={styles.legendText}>
-            {showER ? '✅ 🚑' : '☐ 🚑'} Emergency
-          </Text>
+        <TouchableOpacity onPress={() => focusOnGroup(erPins)}>
+          <Text style={styles.icon}>🚑</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => focusOnGroup(narcanPins)}>
+          <Text style={styles.icon}>💊</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => focusOnGroup(alcoholSupportPins)}>
+          <Text style={styles.icon}>🩹</Text>
         </TouchableOpacity>
       </View>
 
-      {/* ➕ Zoom Buttons */}
+      {/* Zoom Buttons */}
       <View style={styles.zoomControls}>
         <TouchableOpacity onPress={() => zoom(true)} style={styles.zoomButton}>
           <Text style={styles.zoomText}>＋</Text>
@@ -174,16 +196,10 @@ export default function MapScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   map: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
-  },
-  title: {
-    fontWeight: 'bold',
-    marginBottom: 2,
   },
   emojiMarker: {
     alignItems: 'center',
@@ -191,6 +207,10 @@ const styles = StyleSheet.create({
   },
   emoji: {
     fontSize: 24,
+  },
+  title: {
+    fontWeight: 'bold',
+    marginBottom: 2,
   },
   calloutBox: {
     backgroundColor: 'white',
@@ -202,7 +222,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     right: 20,
-    flexDirection: 'row',
+    flexDirection: 'column',
     gap: 10,
   },
   zoomButton: {
@@ -215,25 +235,20 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  legend: {
+  icon: {
+    fontSize: 24,
+    color: '#fff',
+  },
+  sidebar: {
     position: 'absolute',
-    top: 30,
-    left: 10,
+    top: 100,
     right: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingVertical: 6,
-    elevation: 5,
-  },
-  legendText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  legendNote: {
-    position: 'absolute',
-    bottom: 80,
-    left: 20,
+    backgroundColor: '#111',
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 6,
+    gap: 12,
+    alignItems: 'center',
+    elevation: 8,
   },
 });
