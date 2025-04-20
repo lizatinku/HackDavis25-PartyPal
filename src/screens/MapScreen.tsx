@@ -136,7 +136,6 @@ const policePins = [
   },
 ];
 
-
 export default function MapScreen() {
   const mapRef = useRef<MapView>(null);
   const [region, setRegion] = useState<Region>({
@@ -147,11 +146,11 @@ export default function MapScreen() {
   });
 
   const [selectedFilters, setSelectedFilters] = useState({
-    alcohol: true,
-    narcan: true,
-    er: true,
-    police: true,
-    social: true,
+    alcohol: false,
+    narcan: false,
+    er: false,
+    police: false,
+    social: false,
   });
 
   const toggleFilter = (key: keyof typeof selectedFilters) =>
@@ -167,23 +166,6 @@ export default function MapScreen() {
     setRegion(newRegion);
     mapRef.current?.animateToRegion(newRegion, 200);
   };
-
-  const focusOnGroup = (pins: { latitude: number; longitude: number }[]) => {
-    const avgLat = pins.reduce((sum, p) => sum + p.latitude, 0) / pins.length;
-    const avgLon = pins.reduce((sum, p) => sum + p.longitude, 0) / pins.length;
-    const newRegion = {
-      latitude: avgLat,
-      longitude: avgLon,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    };
-    setRegion(newRegion);
-    mapRef.current?.animateToRegion(newRegion, 200);
-  };
-
-  const focusPolice = () => {
-    focusOnGroup(policePins);
-  };  
 
   return (
     <View style={styles.container}>
@@ -219,16 +201,16 @@ export default function MapScreen() {
       {/* Sidebar Navigation */}
       <View style={styles.sidebar}>
         {[
-          { key: 'social', icon: '🎉', onPress: () => focusOnGroup(EventPins) },
-          { key: 'police', icon: '🚓', onPress: focusPolice },
-          { key: 'er', icon: '🚑', onPress: () => focusOnGroup(erPins) },
-          { key: 'narcan', icon: '💊', onPress: () => focusOnGroup(narcanPins) },
-          { key: 'alcohol', icon: '🩹', onPress: () => focusOnGroup(alcoholSupportPins) },
-        ].map(({ key, icon, onPress }) => (
-          <TouchableOpacity key={key} onPress={() => {
-            toggleFilter(key as keyof typeof selectedFilters);
-            onPress();
-          }}>
+          { key: 'social', icon: '🎉' },
+          { key: 'police', icon: '🚓' },
+          { key: 'er', icon: '🚑' },
+          { key: 'narcan', icon: '💊' },
+          { key: 'alcohol', icon: '🩹' },
+        ].map(({ key, icon }) => (
+          <TouchableOpacity
+            key={key}
+            onPress={() => toggleFilter(key as keyof typeof selectedFilters)}
+          >
             <View
               style={[
                 styles.iconWrapper,
@@ -254,6 +236,7 @@ export default function MapScreen() {
   );
 }
 
+// ======= Styles =======
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: {

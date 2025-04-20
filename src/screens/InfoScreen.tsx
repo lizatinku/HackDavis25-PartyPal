@@ -34,7 +34,7 @@ export default function InfoScreen() {
         </View>
         <View style={styles.row}>
           <Text style={styles.emoji}>🚓</Text>
-          <Text style={styles.mapLabel}>Police Stations</Text>
+          <Text style={styles.mapLabel}>Police Station and Saferide Service</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.emoji}>🚑</Text>
@@ -43,10 +43,6 @@ export default function InfoScreen() {
         <View style={styles.row}>
           <Text style={styles.emoji}>💊</Text>
           <Text style={styles.mapLabel}>Overdose Relief (Narcan)</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.emoji}>🫀</Text>
-          <Text style={styles.mapLabel}>Defibrillator</Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.emoji}>🩹</Text>
