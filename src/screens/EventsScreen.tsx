@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import * as Location from 'expo-location';
+
 import {
   View,
   Text,
@@ -182,8 +183,9 @@ const styles = StyleSheet.create({
   searchInput: {
     backgroundColor: '#111',
     padding: 15,
-    margin: 22,
-    borderRadius: 8,
+    marginHorizontal: 22,
+    marginTop: 30,
+    borderRadius: 12,
     color: '#fff',
     fontSize: 16,
     borderWidth: 1,
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1e1e1e',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 999,
     borderWidth: 1,
     borderColor: '#444',
   },
@@ -219,6 +221,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     padding: 8,
     fontSize: 13,
+    borderRadius: 8,
   },
   selectedDropdownItem: {
     fontWeight: 'bold',
@@ -238,7 +241,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#111',
     padding: 14,
     marginBottom: 12,
-    borderRadius: 8,
+    borderRadius: 18,
     borderColor: '#333',
     borderWidth: 1,
   },
