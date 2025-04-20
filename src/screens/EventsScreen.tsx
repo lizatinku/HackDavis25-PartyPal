@@ -1,25 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
 import {
   View,
   Text,
+  StyleSheet,
   FlatList,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
 
 type Event = {
   id: string;
-  name: string;
-  date: string;
+  title: string;
+  start_time: string;
   location: string;
-  hasAlcohol: boolean;
+  has_alcohol: boolean;
   byob: boolean;
   narcan: boolean;
   vibe: 'chill' | 'rowdy' | 'rager';
-  activities: string[];
+  activities: string;
 };
 
 export default function EventsScreen() {
@@ -29,170 +28,76 @@ export default function EventsScreen() {
     narcan: false,
   });
 
-  const [events, setEvents] = useState<Event[]>([
-    {
-      id: '1',
-      name: 'Theta Chi Land',
-      date: 'Sat, Apr 26 • 1PM - 4PM',
-      location: '501 Russell Blvd',
-      hasAlcohol: true,
-      byob: false,
-      narcan: true,
-      vibe: 'rager',
-      activities: ['Water Guns', 'Wristbands', 'Music'],
-    },
-    {
-      id: '2',
-      name: 'Sycamore Game Night',
-      date: 'Fri, Apr 26 • 6PM',
-      location: 'Sycamore Apartments',
-      hasAlcohol: false,
-      byob: true,
-      narcan: false,
-      vibe: 'chill',
-      activities: ['Cards', 'Snacks'],
-    },
-  ]);
-
+  const [events, setEvents] = useState<Event[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const toggleFilter = (key: keyof typeof filters) =>
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
 
-  const filtered = events.filter((event) => {
-    if (filters.alcohol && !event.hasAlcohol) return false;
-    if (filters.byob && !event.byob) return false;
-    if (filters.narcan && !event.narcan) return false;
-    return true;
-  });
+  // const filtered = events.filter((event) => {
+  //   if (filters.alcohol && !event.has_alcohol) return false;
+  //   if (filters.byob && !event.byob) return false;
+  //   if (filters.narcan && !event.narcan) return false;
+  //   return true;
+  // });
 
-  // Add Event Form State
-  const [form, setForm] = useState({
-    name: '',
-    date: '',
-    location: '',
-    vibe: 'chill',
-    hasAlcohol: false,
-    byob: false,
-    narcan: false,
-    activities: '',
-  });
+  
+  useEffect(() => {
+    const fetchEvents = async () => {
+      console.log('Supabase client:', supabase);
 
-  const handleAddEvent = () => {
-    const newEvent: Event = {
-      id: uuidv4(),
-      name: form.name,
-      date: form.date,
-      location: form.location,
-      vibe: form.vibe as 'chill' | 'rowdy' | 'rager',
-      hasAlcohol: form.hasAlcohol,
-      byob: form.byob,
-      narcan: form.narcan,
-      activities: form.activities.split(',').map((a) => a.trim()),
+      console.log('📡 Fetching events from Supabase...');
+      const { data, error } = await supabase.from('events').select('*');
+  
+      if (error) {
+        console.error('❌ Supabase fetch error:', error.message);
+      } else {
+        console.log('✅ Supabase fetch successful');
+        console.log('📦 Raw event data:', data);
+        setEvents(data as Event[]);
+      }
     };
-
-    setEvents([newEvent, ...events]);
-    setForm({
-      name: '',
-      date: '',
-      location: '',
-      vibe: 'chill',
-      hasAlcohol: false,
-      byob: false,
-      narcan: false,
-      activities: '',
-    });
-  };
+  
+    fetchEvents();
+  }, []);
+  
 
   return (
-    <View className="flex-1 bg-black px-4 pt-4">
+    <View style={styles.container}>
       {/* Filters */}
-      <View className="flex-row justify-around bg-zinc-900 py-2 rounded-lg mb-4">
+      <View style={styles.filterBar}>
         {['alcohol', 'byob', 'narcan'].map((key) => (
           <TouchableOpacity key={key} onPress={() => toggleFilter(key as keyof typeof filters)}>
-            <Text className="text-white font-semibold text-xs">
+            <Text style={styles.filterBtn}>
               {filters[key as keyof typeof filters] ? '✅' : '⬜'} {key === 'alcohol' ? 'Alcohol 🍻' : key === 'byob' ? 'BYOB 🍾' : 'Narcan 💊'}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      {/* Add New Event */}
-      <View className="mb-4 border border-zinc-700 rounded-xl p-4 space-y-2">
-        <Text className="text-white font-bold">➕ Add New Event</Text>
-        <TextInput
-          className="bg-zinc-800 text-white px-3 py-2 rounded-md"
-          placeholder="Name"
-          placeholderTextColor="#aaa"
-          value={form.name}
-          onChangeText={(text) => setForm({ ...form, name: text })}
-        />
-        <TextInput
-          className="bg-zinc-800 text-white px-3 py-2 rounded-md"
-          placeholder="Date"
-          placeholderTextColor="#aaa"
-          value={form.date}
-          onChangeText={(text) => setForm({ ...form, date: text })}
-        />
-        <TextInput
-          className="bg-zinc-800 text-white px-3 py-2 rounded-md"
-          placeholder="Location"
-          placeholderTextColor="#aaa"
-          value={form.location}
-          onChangeText={(text) => setForm({ ...form, location: text })}
-        />
-        <TextInput
-          className="bg-zinc-800 text-white px-3 py-2 rounded-md"
-          placeholder="Activities (comma separated)"
-          placeholderTextColor="#aaa"
-          value={form.activities}
-          onChangeText={(text) => setForm({ ...form, activities: text })}
-        />
-        <View className="flex-row justify-between">
-          {['hasAlcohol', 'byob', 'narcan'].map((key) => (
-            <TouchableOpacity
-              key={key}
-              onPress={() =>
-                setForm((prev) => ({
-                  ...prev,
-                  [key]: !prev[key as keyof typeof form],
-                }))
-              }
-            >
-              <Text className="text-white text-sm">
-                {form[key as keyof typeof form] ? '✅' : '⬜'} {key}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <TouchableOpacity
-          className="bg-white rounded-md py-2 items-center mt-2"
-          onPress={handleAddEvent}
-        >
-          <Text className="text-black font-bold">Add Event</Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Event List */}
       <FlatList
-        data={filtered}
+        data={events}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={{ padding: 16 }}
         renderItem={({ item }) => (
           <TouchableOpacity
-            className="bg-zinc-900 p-4 rounded-lg mb-3 border border-zinc-700"
-            onPress={() => setExpandedId(expandedId === item.id ? null : item.id)}
+            style={styles.card}
+            onPress={() =>
+              setExpandedId(expandedId === item.id ? null : item.id)
+            }
           >
-            <Text className="text-white font-bold text-lg">{item.name}</Text>
-            <Text className="text-zinc-300 text-sm">{item.date}</Text>
-            <Text className="text-zinc-300 text-sm">{item.location}</Text>
-            <Text className="text-zinc-300 text-sm">🔥 {item.vibe.toUpperCase()}</Text>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.meta}>{item.start_time}</Text>
+            <Text style={styles.meta}>{item.location}</Text>
+            <Text style={styles.meta}>🔥 {item.vibe.toUpperCase()}</Text>
 
             {expandedId === item.id && (
-              <View className="mt-2 border-t border-zinc-700 pt-2 space-y-1">
-                <Text className="text-white">🍻 Alcohol: {item.hasAlcohol ? 'Yes' : 'No'}</Text>
-                <Text className="text-white">🍾 BYOB: {item.byob ? 'Yes' : 'No'}</Text>
-                <Text className="text-white">💊 Narcan: {item.narcan ? 'Yes' : 'No'}</Text>
-                <Text className="text-white">🎮 Activities: {item.activities.join(', ')}</Text>
+              <View style={styles.details}>
+                <Text>🍻 Alcohol: {item.has_alcohol ? 'Yes' : 'No'}</Text>
+                <Text>🍾 BYOB: {item.byob ? 'Yes' : 'No'}</Text>
+                <Text>💊 Narcan On-Site: {item.narcan ? 'Yes' : 'No'}</Text>
+                <Text>🎮 Activities: {item.activities}</Text>
               </View>
             )}
           </TouchableOpacity>
@@ -201,3 +106,45 @@ export default function EventsScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#000' },
+  filterBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#111',
+    paddingVertical: 10,
+    borderBottomColor: '#222',
+    borderBottomWidth: 1,
+  },
+  filterBtn: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  card: {
+    backgroundColor: '#111',
+    padding: 14,
+    marginBottom: 12,
+    borderRadius: 8,
+    borderColor: '#333',
+    borderWidth: 1,
+  },
+  title: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  meta: {
+    color: '#ccc',
+    fontSize: 13,
+  },
+  details: {
+    marginTop: 8,
+    borderTopColor: '#333',
+    borderTopWidth: 1,
+    paddingTop: 8,
+    gap: 4,
+  },
+});
