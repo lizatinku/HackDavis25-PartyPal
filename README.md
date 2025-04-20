@@ -1,7 +1,6 @@
 # 🥳 PartyPal - The safer, smarter way to party.
 
-PartyPal is your campus companion for finding lit parties and life-saving resources, all in one map-based React Native app. Built at HackDavis 2025, it's tailored for UC Davis students who want to have fun and stay safe.
-
+PartyPal is your campus companion for finding lit parties, events and life-saving resources, all in one map-based React Native app. Built at HackDavis 2025, it’s designed for college students who want to turn up without tripping up.
 
 ## 🚀 Features
 - 🎉 Party Discovery: See upcoming events with date, location, and vibe.
