@@ -28,7 +28,7 @@ type Event = {
   latitude: number;
   longitude: number;
   has_alcohol: boolean;
-  byob: boolean;
+  has_weed: boolean;
   narcan: boolean;
   vibe: 'chill' | 'rowdy' | 'rager';
   activities: string;
@@ -67,7 +67,7 @@ function getEventImage(title: string) {
 }
 
 export default function EventsScreen() {
-  const [filters, setFilters] = useState({ alcohol: false, byob: false, narcan: false });
+  const [filters, setFilters] = useState({ alcohol: false, weed: false, narcan: false });
   const [search, setSearch] = useState('');
   const [events, setEvents] = useState<Event[]>([]);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -85,7 +85,7 @@ export default function EventsScreen() {
     if (selectedDistance !== 5 && distance > selectedDistance) return false;
 
     if (filters.alcohol && !event.has_alcohol) return false;
-    if (filters.byob && !event.byob) return false;
+    if (filters.weed && !event.has_weed) return false;
     if (filters.narcan && !event.narcan) return false;
     if (!event.title.toLowerCase().includes(search.toLowerCase())) return false;
 
@@ -99,15 +99,20 @@ export default function EventsScreen() {
         console.warn('Permission to access location was denied');
         return;
       }
-
+    
       const loc = await Location.getCurrentPositionAsync({});
       setUserLocation({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
-
+    
       const { data, error } = await supabase.from('events').select('*');
       if (error) console.error('❌ Supabase fetch error:', error.message);
-      else setEvents(data as Event[]);
-    };
-
+      else setEvents(
+        (data as any[]).map((event) => ({
+          ...event,
+          narcan: event.narcan_availability,
+          has_weed: event['has_weed'],
+        }))
+      );
+    };    
     fetchLocationAndEvents();
   }, []);
 
@@ -162,9 +167,9 @@ export default function EventsScreen() {
               style={styles.filterIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => toggleFilter('byob')}>
+          <TouchableOpacity onPress={() => toggleFilter('weed')}>
             <Image
-              source={filters.byob ? weedIconSelected : weedIcon}
+              source={filters.weed ? weedIconSelected : weedIcon}
               style={styles.filterIcon}
             />
           </TouchableOpacity>
