@@ -16,7 +16,7 @@ PartyPal is your campus companion for finding lit parties, events and life-savin
 ### 🔍 Events Fetch
 Events are pulled from Supabase, then filtered based on:
 - Distance (via Haversine formula)
-- Toggle filters (has_alcohol, narcan, smoking/weed, etc.)
+- Toggle filters (alcohol, narcan, weed, etc.)
 - Search query
 
 ## 🧭 Map Markers
@@ -24,7 +24,7 @@ Events are pulled from Supabase, then filtered based on:
 - 🎉 for parties
 - 💊 for Narcan
 - 🚑 for ERs
-- 🚓 for police and Saferide
+- 🚓 for Police and Saferide
 - 🩹 for rehab & alcohol safety
 
 Sidebar toggles visibility without re-centering the map — perfect for judging at a glance. Zoom controls allow manual precision.
@@ -43,5 +43,5 @@ Make sure you have your Supabase URL and Anon Key set up in .env or lib/supabase
 
 ## 🙌 Team
 Built by:
-- 👩‍💻 @lizatinkujose – Full-stack dev
+- 👩‍💻 Liza Tinku Jose: Full-stack dev
 - 🎨 Tyler Bernshteyn & Elysia Touami: Two amazing designers who made the app pop visually
