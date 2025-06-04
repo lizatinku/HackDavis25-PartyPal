@@ -34,7 +34,7 @@ type Event = {
   activities: string;
 };
 
-const distanceOptions = [5, 15, 25, 50];
+const distanceOptions = [5, 10, 15,];
 
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
   const toRad = (x: number) => (x * Math.PI) / 180;
